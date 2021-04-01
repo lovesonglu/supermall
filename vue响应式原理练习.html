@@ -5,6 +5,76 @@
     <title>Title</title>
 </head>
 <body>
+  <div id="app">
+    {{message}}
+    {{message}}
 
+
+    {{name}}
+  </div>
+
+
+  <script>
+    //发布者订阅者模式
+    const obj = {
+      message: '你好',
+      name: 'lu'
+    }
+
+    Object.keys(obj).forEach(key => {
+      let value = obj[key]
+      Object.defineProperty(obj, key, {
+        set(newValue) {
+          value = newValue
+        },
+        get() {
+          return value
+        }
+      })
+    })
+    //发布者
+    class Dep{
+      constructor(){
+        this.subs = []
+      }
+      addSub(watcher){
+        this.subs.push(watcher)
+      }
+      notify(){
+        this.subs.forEach(item => {
+          item.update()
+        })
+      }
+    }
+    //订阅者
+    class Watcher{
+      constructor(name){
+        this.name = name
+      }
+
+      update(){
+        console.log(this.name + '发生改变');
+      }
+    }
+
+    //使用
+    const dep = new Dep()
+    const w1 = new Watcher('张三')
+    dep.addSub(w1)
+    const w2 = new Watcher('李四')
+    dep.addSub(w2)
+
+    dep.notify()
+  </script>
+  <script src="./node_modules/vue/dist/vue.js"></script>
+  <script>
+    const app = new Vue({
+      el:"#app",
+      data:{
+        message: '你好',
+        name: 'lu'
+      }
+    })
+  </script>
 </body>
 </html>

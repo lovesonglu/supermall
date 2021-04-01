@@ -19,9 +19,9 @@
     }
 
     Object.keys(obj).forEach(key => {
-      let value = obj[key]
+      let value = obj[key]//或者对象的值
 
-      Object.defineProperty(obj, key, {
+      Object.defineProperty(obj, key, {//监听对象值的改变，给对象的属性重新定义属性
         set(newValue){
           console.log('监听' + key + '的改变');
           //告诉谁了？谁用告诉谁？谁在用了？

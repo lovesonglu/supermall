@@ -6,92 +6,54 @@
 </head>
 <body>
   <div id="app">
-    {{message}}<!--张三-->
-    {{message}}<!--李四-->
-    {{message}}<!--王五-->
-
-    {{name}}
+    <cpn :c_books="books" @to_send="toShow" ref="child01"></cpn>
+    <p>{{message}}<input type="text"  v-model="message"></p>
+    <button @click="getChild">调用子组件方法</button>
   </div>
-  <script>
-    const obj = {
-      message: '哈哈啊',
-      name: 'song'
-    }
 
-    Object.keys(obj).forEach(key => {
-      let value = obj[key]//或者对象的值
-
-      Object.defineProperty(obj, key, {//监听对象值的改变，给对象的属性重新定义属性
-        set(newValue){
-          console.log('监听' + key + '的改变');
-          //告诉谁了？谁用告诉谁？谁在用了？
-          //根据解析html代码，获取到哪些人有用属性
-          value = newValue
-
-          //dep.notify()//通知
-        },
-        get(){
-          console.log('获取' + key + '对应的值');
-          //张三 get -> update
-          //李四 get -> update
-          //王五 get -> update
-          return value
-        }
-      })
-    })
-
-    //obj.name = 'kobe'
-
-    //发布者订阅者模式
-
-    //发布者
-    class Dep {
-      constructor(){
-        this.subs = []//记录谁订阅了属性
-      }
-
-      addSub(wather){//添加订阅者
-        this.subs.push(wather)
-      }
-
-      notify(){//通知订阅者
-        this.subs.forEach(item => {
-          item.update()
-        })
-      }
-    }
-
-    //订阅者
-    class Watcher{
-      constructor(name){
-        this.name = name
-      }
-
-      update(){
-        console.log(this.name + '发生update');
-      }
-    }
-
-    const dep = new Dep()
-
-    const w1 = new Watcher('张三')
-    dep.addSub(w1)//添加订阅者
-
-    const w2 = new Watcher('李四')
-    dep.addSub(w2)
-
-    const w3 = new Watcher('王五')
-    dep.addSub(w3)
-
-    dep.notify()//通知订阅者
-  </script>
+  <template id="cpn">
+    <div>
+      <p v-for="item in c_books" @click="toSend(item)">{{item}}</p>
+    </div>
+  </template>
   <script src="./node_modules/vue/dist/vue.js"></script>
   <script>
-    const app = new Vue({
+    const cpn = {
+      template: '#cpn',
+      props:{
+        c_books:{
+          type: Array,
+          default(){
+            return []
+          }
+        }
+      },
+      methods: {
+        toSend(item){
+          this.$emit('to_send', item);
+        },
+        show02(){
+          alert('子组件方法');
+        }
+      }
+    }
+
+    const vm = new Vue({
       el: '#app',
+      components:{
+        cpn
+      },
       data: {
-        message: 'hahaha',
-        name: 'song'
+        books:['java', 'html', 'css'],
+        message: "hello"
+      },
+      methods:{
+        toShow(item){
+          alert(item);
+        },
+        getChild(){
+          this.$refs.child01.show02();
+        }
       }
     })
   </script>
